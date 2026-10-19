@@ -1,6 +1,7 @@
 """
 Sube todos los precios de un catalogo PDF un porcentaje fijo, conservando
-el diseno original, y borra la banda de marca del encabezado.
+el diseno original, y borra el texto de la banda de marca del encabezado
+(la capa de texto: el fondo vectorial y las imagenes no se tocan).
 
 Dos problemas que no son obvios y que resuelve este script
 ----------------------------------------------------------
