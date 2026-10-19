@@ -38,6 +38,7 @@ Uso
 """
 import argparse
 import re
+from decimal import ROUND_HALF_UP, Decimal
 
 import pymupdf as fitz
 
@@ -111,7 +112,7 @@ def color_de_fondo(pixmap, area, es_multicolumna):
 def actualizar(entrada, salida, porcentaje, paginas_multicolumna,
                paginas_conservar_encabezado, quitar_encabezado=True):
     doc = fitz.open(entrada)
-    multiplicador = 1 + porcentaje / 100
+    multiplicador = 1 + Decimal(str(porcentaje)) / 100
     total = 0
 
     for n, pagina in enumerate(doc):
@@ -125,8 +126,9 @@ def actualizar(entrada, salida, porcentaje, paginas_multicolumna,
 
         detectados = detectar_precios(pagina, n, paginas_multicolumna)
         for viejo, areas in detectados.items():
-            nuevo = f"{float(viejo.replace(',', '.')) * multiplicador:.2f}"
-            nuevo = nuevo.replace(".", ",")
+            nuevo = (Decimal(viejo.replace(",", ".")) * multiplicador
+                     ).quantize(Decimal("0.01"), ROUND_HALF_UP)
+            nuevo = str(nuevo).replace(".", ",")
             for area in areas:
                 en_encabezado = (area.y1 < Y_LIMITE_ENCABEZADO
                                  and n not in paginas_conservar_encabezado)
@@ -160,7 +162,7 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("entrada")
     ap.add_argument("salida")
-    ap.add_argument("-p", "--porcentaje", type=float, default=20.0)
+    ap.add_argument("-p", "--porcentaje", type=Decimal, default=Decimal(20))
     ap.add_argument("--multicolumna", type=int, nargs="*", default=[],
                     help="indices (base 0) de paginas con varios precios por linea")
     ap.add_argument("--conservar-encabezado", type=int, nargs="*", default=[0],
