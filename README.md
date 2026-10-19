@@ -237,6 +237,7 @@ visual no detecta, porque en los dos casos **el PDF se ve bien**.
 | `actualizar_precios.py` | detecta y reemplaza los precios, borra la marca |
 | `validar.py` | verifica la salida contra el original, sin compartir código con el script |
 | `pruebas/test_sabotajes.py` | rompe el proceso a propósito y comprueba que la validación falla |
+| `generar_imagen_demo.py` | genera la imagen de antes y después de este README |
 | `demo/` | catálogo sintético, antes y después |
 
 Stack: Python 3 y [PyMuPDF](https://pymupdf.readthedocs.io/). Sin
