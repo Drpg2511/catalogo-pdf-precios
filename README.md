@@ -145,9 +145,9 @@ En los dos casos el PDF se ve bien y el resultado es `HAY QUE REVISAR`.
 
 **Limitación, dicha de frente:** el validador no comparte código con el
 script, pero sí un supuesto: en una página de tabla, el precio es el último
-número con formato `X,XX` de la línea. Si un catálogo no lo cumple (por
-ejemplo, precios `1.234,56`, que el patrón no reconoce), el script y el
-validador se equivocan igual. Y la detección de multicolumna sin marcar es
+número con formato `X,XX` de la línea. Si un catálogo no lo cumple (ver
+[Limitaciones conocidas](#limitaciones-conocidas)), el script y el validador
+se equivocan igual. Y la detección de multicolumna sin marcar es
 una heurística: busca una palabra con dígitos (un código) entre dos precios
 de la misma línea.
 
@@ -178,6 +178,41 @@ python pruebas/test_sabotajes.py         # comprueba que el validador detecta er
 | `--multicolumna 3` | páginas (base 0) con varios precios por línea |
 | `--conservar-encabezado 0` | páginas donde **no** borrar la banda de marca |
 | `--dejar-encabezado` | no borrar la marca en ninguna página |
+
+---
+
+## Limitaciones conocidas
+
+Estos casos fallan **en silencio**: el script termina sin error y, salvo
+donde se indica, el validador da `TODO OK`.
+
+- **Precios con otro formato que `X,XX`.** El patrón solo reconoce números
+  como `15,90`. Con `1.234,56` (separador de miles), `15,90€` (símbolo
+  pegado) o una fila sin precio, la regla derecha-a-izquierda toma como
+  precio el último número que sí reconoce, que es una medida. En la fila
+  `12,50 … 1.234,56` el script sube `12,50` a `15,00` y deja el precio como
+  estaba. El validador comparte el supuesto y tampoco lo detecta.
+  (`15,90 €`, con espacio, funciona: el `€` es otra palabra).
+- **Encabezado fijo de 91 pt.** `Y_LIMITE_ENCABEZADO = 91.0` está ajustado a
+  la demo. En cada página que no está en `--conservar-encabezado` se borra
+  todo lo que haya por encima, precios incluidos, sin aviso. El validador lo
+  muestra en el conteo por página (`eliminados con el encabezado`) pero no lo
+  cuenta como error.
+- **Índices de página en base 0, salida en base 1.** `--multicolumna 3` es
+  la página que el script imprime como `pagina 4`. Usar el número de la
+  salida marca la página equivocada. Si una página multicolumna queda sin
+  marcar, el validador lo detecta; si una página de **tabla** queda marcada
+  como multicolumna, el script sube también las medidas y el validador no lo
+  ve, porque en esas páginas espera que todos los números cambien.
+
+Además:
+
+- El precio nuevo se escribe siempre en Helvetica 8 pt negra (con trazo para
+  simular negrita), sea cual sea la fuente original.
+- De la banda de marca se elimina el texto; el fondo vectorial y las
+  imágenes quedan en el archivo.
+- Los metadatos del PDF de entrada (autor, título) pasan sin cambios a la
+  salida.
 
 ---
 
