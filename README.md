@@ -253,3 +253,9 @@ construido con la misma estructura que un catálogo comercial real —incluidas
 las columnas de medida en formato de precio, que son la trampa— para poder
 demostrar y verificar el funcionamiento sin publicar material de ningún
 cliente.
+
+---
+
+## Licencia
+
+[MIT](LICENSE).
